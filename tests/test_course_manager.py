@@ -167,16 +167,13 @@ class TestCourseManager:
         
         ranking = manager.get_student_ranking(2)
         # Same average, so sort by student ID ascending
-        assert ranking[0]["student_id"] == sid2  # Adam comes before Zack alphabetically/numerically if IDs are sequential
-        # Note: STU-001 vs STU-002. STU-001 is Adam, STU-002 is Zack.
-        # So Adam should be first.
-        assert ranking[0]["student_name"] == "Adam"
-        assert ranking[1]["student_name"] == "Zack"
+        # STU-001 (Zack) < STU-002 (Adam) alphabetically/numerically as strings
+        assert ranking[0]["student_id"] == sid1  # Zack comes first because STU-001 < STU-002
+        assert ranking[0]["student_name"] == "Zack"
+        assert ranking[1]["student_id"] == sid2
+        assert ranking[1]["student_name"] == "Adam"
 
     def test_invalid_course_id_format(self, manager):
-        with pytest.raises(ValueError, match="Invalid course ID format"):
-            manager.add_course("Math") # This tests adding, but validation is on ID input usually in other funcs.
-                                      # Let's test enroll with bad ID.
         manager.add_course("Math")
         with pytest.raises(ValueError, match="Invalid course ID format"):
             manager.enroll_student("STU-001", "BAD-ID")
